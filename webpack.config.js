@@ -1,29 +1,43 @@
-const path = require("path");
+const path = require('path');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 module.exports = {
-    name: 'wordrelay-setting', // 그냥 이름
-    mode: 'development', // 실시간 서비스로 출시할 때는 production으로 바꿔야함
-    devtool: 'eval', // 빠른 모드라는 뜻
+    name: 'word-relay-dev',
+    mode: 'development',
+    devtool: 'inline-source-map',
     resolve: {
         extensions: ['.js', '.jsx'],
     },
-
     entry: {
-        app: ['./client'],
+        app: './client',
     },
-
     module: {
         rules: [{
-            test: /\.jsx?/,
+            test: /\.jsx?$/,
             loader: 'babel-loader',
             options: {
-                presets: ['@babel/preset-env', '@babel/preset-react'],
-            }
-        }]
+                presets: [
+                    ['@babel/preset-env', {
+                        targets: { browsers: ['last 2 chrome versions'] },
+                        debug: true,
+                    }],
+                    '@babel/preset-react',
+                ],
+                plugins: ['react-refresh/babel'],
+            },
+            exclude: path.join(__dirname, 'node_modules'),
+        }],
     },
-
+    plugins: [
+        new ReactRefreshWebpackPlugin(),
+    ],
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'app.js',
+        filename: '[name].js',
+        publicPath: '/dist',
+    },
+    devServer: {
+        publicPath: '/dist',
+        hot: true
     }
-}
+};
